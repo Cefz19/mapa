@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mapa_1/src/ui/pages/home_controller.dart';
+import 'package:mapa_1/src/ui/page/home/home_controller.dart';
 import 'package:provider/provider.dart';
 
 class GoogleTransito extends StatelessWidget {
