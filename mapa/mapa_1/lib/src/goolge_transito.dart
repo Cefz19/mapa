@@ -8,7 +8,14 @@ class GoogleTransito extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<HomeController>(
-      create: (_) => HomeController(),
+      create: (_) {
+        final controller = HomeController();
+        controller.onMarkerTap.listen((String id) {
+          // ignore: avoid_print
+          print('got to $id');
+        });
+        return controller;
+      },
       child: Scaffold(
         body: Consumer<HomeController>(
           builder: (_, controller, __) => Column(

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show ChangeNotifier, Offset;
+import 'package:flutter/material.dart' show ChangeNotifier;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'maps_style.dart';
