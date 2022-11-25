@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart' show ChangeNotifier;
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mapa_1/src/helper/assets_to_bite.dart';
+import 'package:mapa_1/src/helper/image_to_bite.dart';
 
 import 'maps_style.dart';
 
@@ -22,7 +22,11 @@ class HomeController extends ChangeNotifier {
   final _acumuladorIcon = Completer<BitmapDescriptor>();
 
   HomeController() {
-    assetToBytes('assets/12.png', width: 130).then(
+    imageToBytes(
+      'https://i2.wp.com/www3.gobiernodecanarias.org/medusa/ecoblog/crodalf/files/2021/10/calabaza.jpg?fit=450%2C413&ssl=1',
+      width: 60,
+      fromNetwork: true,
+    ).then(
       (value) {
         final bitMap = BitmapDescriptor.fromBytes(value);
         _acumuladorIcon.complete(bitMap);
