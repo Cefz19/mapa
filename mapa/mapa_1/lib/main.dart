@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mapa_1/src/goolge_transito.dart';
+import 'package:mapa_1/src/ui/page/route/pages.dart';
+import 'package:mapa_1/src/ui/page/route/route.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,10 +13,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: const GoogleTransito());
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      initialRoute: Routes.SPLASH,
+      routes: appRoutes(),
+    );
   }
 }
