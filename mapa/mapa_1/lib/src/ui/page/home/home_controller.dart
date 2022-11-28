@@ -14,10 +14,10 @@ class HomeController extends ChangeNotifier {
   final _markersController = StreamController<String>.broadcast();
   Stream<String> get onMarkerTap => _markersController.stream;
 
-  final initialCameraPosition = const CameraPosition(
-    target: LatLng(21.116667, -101.683334),
-    zoom: 15,
-  );
+  Position? _initialPosition;
+  CameraPosition get initialCameraPosition => CameraPosition(
+        target: LatLng(_initialPosition!.latitude, _initialPosition!.longitude),
+      );
 
   final _acumuladorIcon = Completer<BitmapDescriptor>();
 
@@ -26,6 +26,8 @@ class HomeController extends ChangeNotifier {
 
   late bool _gpsEnabled;
   bool get gpsEnabled => _gpsEnabled;
+
+  StreamSubscription? _gpsSubscription;
 
   HomeController() {
     _init();
@@ -43,12 +45,27 @@ class HomeController extends ChangeNotifier {
     _gpsEnabled = await Geolocator.isLocationServiceEnabled();
 
     _loading = false;
+    _gpsSubscription =
+        Geolocator.getServiceStatusStream().listen((status) async {
+      _gpsEnabled = status == ServiceStatus.enabled;
+      await _getInitialPosition();
+      notifyListeners();
+    });
+    await _getInitialPosition();
     notifyListeners();
+  }
+
+  Future<void> _getInitialPosition() async {
+    if (_gpsEnabled && _initialPosition == null) {
+      _initialPosition = await Geolocator.getCurrentPosition();
+    }
   }
 
   void onMapCreated(GoogleMapController controller) {
     controller.setMapStyle(mapStyle);
   }
+
+  Future<void> turnOnGPS() => Geolocator.openLocationSettings();
 
   void onTap(LatLng position) async {
     final id = _markers.length.toString();
@@ -75,6 +92,7 @@ class HomeController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _gpsSubscription?.cancel();
     _markersController.close();
     super.dispose();
   }

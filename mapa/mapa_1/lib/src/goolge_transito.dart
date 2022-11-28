@@ -28,6 +28,7 @@ class GoogleTransito extends StatelessWidget {
                 if (controller.gpsEnabled) {
                   return gpsMessageWidget!;
                 }
+
                 return Column(
                   children: <Widget>[
                     SizedBox(
@@ -37,6 +38,9 @@ class GoogleTransito extends StatelessWidget {
                         markers: controller.markers,
                         mapType: MapType.normal,
                         initialCameraPosition: controller.initialCameraPosition,
+                        myLocationButtonEnabled: true,
+                        myLocationEnabled: true,
+                        compassEnabled: false,
                         onMapCreated: controller.onMapCreated,
                         onTap: controller.onTap,
                       ),
@@ -53,7 +57,11 @@ class GoogleTransito extends StatelessWidget {
                         textAlign: TextAlign.center),
                     const SizedBox(height: 10.0),
                     ElevatedButton(
-                        onPressed: () {}, child: const Text('Turn on GPS')),
+                        onPressed: () {
+                          final controller = context.read<HomeController>();
+                          controller.turnOnGPS();
+                        },
+                        child: const Text('Turn on GPS')),
                   ],
                 ),
               ),
