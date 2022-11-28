@@ -27,7 +27,7 @@ class HomeController extends ChangeNotifier {
   late bool _gpsEnabled;
   bool get gpsEnabled => _gpsEnabled;
 
-  StreamSubscription? _gpsSubscription;
+  StreamSubscription? _gpsSubscription, _positionSubscription;
 
   HomeController() {
     _init();
@@ -53,6 +53,11 @@ class HomeController extends ChangeNotifier {
     });
     await _getInitialPosition();
     notifyListeners();
+  }
+
+  _initLocationUpDates() {
+    _positionSubscription =
+        Geolocator.getPositionStream().listen((Position) {});
   }
 
   Future<void> _getInitialPosition() async {
@@ -92,6 +97,7 @@ class HomeController extends ChangeNotifier {
 
   @override
   void dispose() {
+    _positionSubscription?.cancel();
     _gpsSubscription?.cancel();
     _markersController.close();
     super.dispose();
