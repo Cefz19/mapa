@@ -17,6 +17,7 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
     with WidgetsBindingObserver {
   final _controller = RequestPermissionController(Permission.locationWhenInUse);
   late StreamSubscription _subscription;
+  bool _formSettings = false;
 
   @override
   void initState() {
@@ -36,9 +37,9 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
                         const Text('Ingresar para dar permisos manualmente'),
                     actions: [
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Navigator.pop(context);
-                          openAppSettings();
+                          _formSettings = await openAppSettings();
                         },
                         child: const Text('Go to settings'),
                       ),
@@ -63,13 +64,13 @@ class _RequestPermissionPageState extends State<RequestPermissionPage>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed && _formSettings) {
       final status = await _controller.check();
       if (status == PermissionStatus.granted) {
         _goToHome();
       }
     }
-    super.didChangeAppLifecycleState(state);
+    _formSettings = false;
   }
 
   @override
