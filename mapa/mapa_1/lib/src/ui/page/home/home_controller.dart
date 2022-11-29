@@ -1,25 +1,22 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart' show ChangeNotifier;
+import 'package:flutter/material.dart' show ChangeNotifier, Colors;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:mapa_1/src/helper/image_to_bite.dart';
 import 'maps_style.dart';
 
 class HomeController extends ChangeNotifier {
   final Map<MarkerId, Marker> _markers = {};
+  final Map<PolylineId, Polyline> _polylines = {};
 
   Set<Marker> get markers => _markers.values.toSet();
+  Set<Polyline> get polylines => _polylines.values.toSet();
 
   final _markersController = StreamController<String>.broadcast();
   Stream<String> get onMarkerTap => _markersController.stream;
 
   Position? _initialPosition;
-  CameraPosition get initialCameraPosition => CameraPosition(
-        target: LatLng(_initialPosition!.latitude, _initialPosition!.longitude),
-      );
-
-  final _acumuladorIcon = Completer<BitmapDescriptor>();
+  Position? get initialPosition => _initialPosition;
 
   bool _loading = true;
   bool get loading => _loading;
@@ -28,20 +25,13 @@ class HomeController extends ChangeNotifier {
   bool get gpsEnabled => _gpsEnabled;
 
   StreamSubscription? _gpsSubscription, _positionSubscription;
+  String _polylineId = '0';
 
   HomeController() {
     _init();
   }
 
   Future<void> _init() async {
-    final value = await imageToBytes(
-      'https://i2.wp.com/www3.gobiernodecanarias.org/medusa/ecoblog/crodalf/files/2021/10/calabaza.jpg?fit=450%2C413&ssl=1',
-      width: 60,
-      fromNetwork: true,
-    );
-    final bitmap = BitmapDescriptor.fromBytes(value);
-    _acumuladorIcon.complete(bitmap);
-
     _gpsEnabled = await Geolocator.isLocationServiceEnabled();
 
     _loading = false;
@@ -93,26 +83,31 @@ class HomeController extends ChangeNotifier {
 
   Future<void> turnOnGPS() => Geolocator.openLocationSettings();
 
+  void newPolyline() {
+    _polylineId = DateTime.now().millisecondsSinceEpoch.toString();
+  }
+
   void onTap(LatLng position) async {
-    final id = _markers.length.toString();
-    final markerId = MarkerId(id);
+    final PolylineId polylineId = PolylineId(_polylineId);
+    late Polyline polyline;
 
-    final icon = await _acumuladorIcon.future;
-
-    final marker = Marker(
-        markerId: markerId,
-        position: position,
-        draggable: true,
-        //anchor: const Offset(0.5, 1),
-        icon: icon,
-        onTap: () {
-          _markersController.sink.add(id);
-        },
-        onDragEnd: (newPosition) {
-          // ignore: avoid_print
-          print('new position $newPosition');
-        });
-    _markers[markerId] = marker;
+    if (_polylines.containsKey(polylineId)) {
+      final tmp = _polylines[polylineId]!;
+      polyline = tmp.copyWith(
+        pointsParam: [...tmp.points, position],
+      );
+    } else {
+      final color = Colors.primaries[_polylines.length];
+      polyline = Polyline(
+        polylineId: polylineId,
+        points: [position],
+        width: 5,
+        color: color,
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+      );
+    }
+    _polylines[polylineId] = polyline;
     notifyListeners();
   }
 

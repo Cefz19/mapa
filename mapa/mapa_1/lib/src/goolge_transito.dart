@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_1/src/ui/page/home/home_controller.dart';
+import 'package:mapa_1/src/ui/page/home/widgets/map_view.dart';
 import 'package:provider/provider.dart';
 
 class GoogleTransito extends StatelessWidget {
@@ -17,55 +17,24 @@ class GoogleTransito extends StatelessWidget {
         return controller;
       },
       child: Scaffold(
+        appBar: AppBar(actions: [
+          Builder(
+            builder: (context) => IconButton(
+              onPressed: () {
+                final controller = context.read<HomeController>();
+                controller.newPolyline();
+              },
+              icon: const Icon(Icons.add),
+            ),
+          )
+        ]),
         body: Selector<HomeController, bool>(
           selector: (_, controller) => controller.loading,
           builder: ((context, loading, loadingWidget) {
             if (loading) {
               return loadingWidget!;
             }
-            return Consumer<HomeController>(
-              builder: (_, controller, gpsMessageWidget) {
-                if (controller.gpsEnabled) {
-                  return gpsMessageWidget!;
-                }
-
-                return Column(
-                  children: <Widget>[
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 2,
-                      width: MediaQuery.of(context).size.width,
-                      child: GoogleMap(
-                        markers: controller.markers,
-                        mapType: MapType.normal,
-                        initialCameraPosition: controller.initialCameraPosition,
-                        myLocationButtonEnabled: true,
-                        myLocationEnabled: true,
-                        compassEnabled: false,
-                        onMapCreated: controller.onMapCreated,
-                        onTap: controller.onTap,
-                      ),
-                    )
-                  ],
-                );
-              },
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                        'To use our app we need the acess to your location,\n so you must the GPS',
-                        textAlign: TextAlign.center),
-                    const SizedBox(height: 10.0),
-                    ElevatedButton(
-                        onPressed: () {
-                          final controller = context.read<HomeController>();
-                          controller.turnOnGPS();
-                        },
-                        child: const Text('Turn on GPS')),
-                  ],
-                ),
-              ),
-            );
+            return const MapaView();
           }),
           child: const Center(
             child: CircularProgressIndicator(),
