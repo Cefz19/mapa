@@ -26,6 +26,15 @@ class GoogleTransito extends StatelessWidget {
               },
               icon: const Icon(Icons.add),
             ),
+          ),
+          Builder(
+            builder: (context) => IconButton(
+              onPressed: () {
+                final controller = context.read<HomeController>();
+                controller.newPolygon();
+              },
+              icon: const Icon(Icons.map),
+            ),
           )
         ]),
         body: Selector<HomeController, bool>(

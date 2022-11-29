@@ -27,7 +27,7 @@ class MapaView extends StatelessWidget {
               child: GoogleMap(
                 markers: controller.markers,
                 polylines: controller.polylines,
-                mapType: MapType.normal,
+                polygons: controller.polygons,
                 initialCameraPosition: initialCameraPosition,
                 myLocationButtonEnabled: true,
                 myLocationEnabled: true,
