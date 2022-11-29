@@ -45,24 +45,45 @@ class HomeController extends ChangeNotifier {
     _gpsEnabled = await Geolocator.isLocationServiceEnabled();
 
     _loading = false;
-    _gpsSubscription =
-        Geolocator.getServiceStatusStream().listen((status) async {
-      _gpsEnabled = status == ServiceStatus.enabled;
-      await _getInitialPosition();
-      notifyListeners();
-    });
-    await _getInitialPosition();
-    notifyListeners();
+    _gpsSubscription = Geolocator.getServiceStatusStream().listen(
+      (status) async {
+        _gpsEnabled = status == ServiceStatus.enabled;
+        if (_gpsEnabled) {
+          _initLocationUpDates();
+        }
+      },
+    );
+    _initLocationUpDates();
   }
 
-  _initLocationUpDates() {
-    _positionSubscription =
-        Geolocator.getPositionStream().listen((Position) {});
+  Future<void> _initLocationUpDates() async {
+    bool initialized = false;
+    await _positionSubscription?.cancel();
+    _positionSubscription = Geolocator.getPositionStream().listen(
+      (position) {
+        // ignore: avoid_print
+        print(('object'));
+        if (!initialized) {
+          _setInitialPosition(position);
+          initialized = true;
+          notifyListeners();
+        }
+      },
+      onError: (e) {
+        // ignore: avoid_print
+        print("on Error ${e.runtimeType}");
+        if (e is LocationServiceDisabledException) {
+          _gpsEnabled = false;
+          notifyListeners();
+        }
+      },
+    );
   }
 
-  Future<void> _getInitialPosition() async {
+  void _setInitialPosition(Position position) {
     if (_gpsEnabled && _initialPosition == null) {
-      _initialPosition = await Geolocator.getCurrentPosition();
+      // _initialPosition = await Geolocator.getCurrentPosition();
+      _initialPosition = position;
     }
   }
 
