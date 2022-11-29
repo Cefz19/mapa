@@ -27,6 +27,7 @@ class HomeController extends ChangeNotifier {
   bool get gpsEnabled => _gpsEnabled;
 
   StreamSubscription? _gpsSubscription, _positionSubscription;
+  // ignore: unused_field
   String _polylineId = '0';
   String _polygonId = '0';
 
