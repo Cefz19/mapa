@@ -11,9 +11,9 @@ class MapaView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<HomeController>(
       builder: (_, controller, gpsMessageWidget) {
-        if (controller.gpsEnabled) {
-          return gpsMessageWidget!;
-        }
+        // if (controller.gpsEnabled) {
+        //   return gpsMessageWidget!;
+        // }
         final initialCameraPosition = CameraPosition(
           target: LatLng(controller.initialPosition!.latitude,
               controller.initialPosition!.longitude),
