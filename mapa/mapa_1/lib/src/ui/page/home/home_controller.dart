@@ -1,8 +1,8 @@
 import 'dart:async';
-
-import 'package:flutter/material.dart' show ChangeNotifier, Colors;
+import 'package:flutter/material.dart' show ChangeNotifier, Colors, Offset;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapa_1/src/helper/image_to_bite.dart';
 import 'maps_style.dart';
 
 class HomeController extends ChangeNotifier {
@@ -14,10 +14,12 @@ class HomeController extends ChangeNotifier {
   Set<Polyline> get polylines => _polylines.values.toSet();
   Set<Polygon> get polygons => _polygons.values.toSet();
 
+  late BitmapDescriptor _carPin;
+
   final _markersController = StreamController<String>.broadcast();
   Stream<String> get onMarkerTap => _markersController.stream;
 
-  Position? _initialPosition;
+  Position? _initialPosition, _lastPosition;
   Position? get initialPosition => _initialPosition;
 
   bool _loading = true;
@@ -27,6 +29,8 @@ class HomeController extends ChangeNotifier {
   bool get gpsEnabled => _gpsEnabled;
 
   StreamSubscription? _gpsSubscription, _positionSubscription;
+  GoogleMapController? _mapController;
+
   // ignore: unused_field
   String _polylineId = '0';
   String _polygonId = '0';
@@ -36,6 +40,9 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> _init() async {
+    _carPin = BitmapDescriptor.fromBytes(
+      await imageToBytes('assets/imagen_auto.png', width: 55),
+    );
     _gpsEnabled = await Geolocator.isLocationServiceEnabled();
 
     _loading = false;
@@ -52,15 +59,37 @@ class HomeController extends ChangeNotifier {
 
   Future<void> _initLocationUpDates() async {
     bool initialized = false;
+    // ignore: prefer_const_constructors
+    final LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    );
     await _positionSubscription?.cancel();
-    _positionSubscription = Geolocator.getPositionStream().listen(
-      (position) {
+    _positionSubscription =
+        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+      (Position? position) async {
         // ignore: avoid_print
-        print(('object'));
+        print(position == null
+            ? 'Unknown'
+            : '${position.latitude.toString()}, ${position.longitude.toString()}');
+        _setMyPositionMarker(position!);
+        if (initialized) {
+          notifyListeners();
+        }
+
         if (!initialized) {
           _setInitialPosition(position);
           initialized = true;
           notifyListeners();
+        }
+
+        if (_mapController != null) {
+          final zoom = await _mapController!.getZoomLevel();
+          final cameraUpDate = CameraUpdate.newLatLngZoom(
+            LatLng(position.latitude, position.longitude),
+            zoom,
+          );
+          _mapController!.animateCamera(cameraUpDate);
         }
       },
       onError: (e) {
@@ -81,8 +110,31 @@ class HomeController extends ChangeNotifier {
     }
   }
 
+  void _setMyPositionMarker(Position position) {
+    double rotation = 0;
+    if (_lastPosition != null) {
+      rotation = Geolocator.bearingBetween(
+        _lastPosition!.latitude,
+        _lastPosition!.longitude,
+        position.latitude,
+        position.longitude,
+      );
+    }
+    const markerId = MarkerId('my_position');
+    final marker = Marker(
+      markerId: markerId,
+      position: LatLng(position.latitude, position.longitude),
+      icon: _carPin,
+      anchor: const Offset(0.5, 0.5),
+      rotation: rotation,
+    );
+    _markers[markerId] = marker;
+    _lastPosition = position;
+  }
+
   void onMapCreated(GoogleMapController controller) {
     controller.setMapStyle(mapStyle);
+    _mapController = controller;
   }
 
   Future<void> turnOnGPS() => Geolocator.openLocationSettings();
