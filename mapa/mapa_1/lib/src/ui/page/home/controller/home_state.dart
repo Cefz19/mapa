@@ -20,12 +20,12 @@ class HomeState {
         polylines: {},
       );
 
-  HomeState copyWith(
+  HomeState copyWith({
     bool? loading,
     bool? gpsEnabled,
     Map<MarkerId, Marker>? markers,
     Map<PolygonId, Polyline>? polylines,
-  ) {
+  }) {
     return HomeState(
       loading: loading ?? this.loading,
       gpsEnabled: gpsEnabled ?? this.gpsEnabled,

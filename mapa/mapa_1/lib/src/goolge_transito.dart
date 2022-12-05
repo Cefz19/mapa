@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mapa_1/src/ui/page/home/home_controller.dart';
+import 'package:mapa_1/src/ui/page/home/controller/home_controller.dart';
 import 'package:mapa_1/src/ui/page/home/widgets/map_view.dart';
 import 'package:provider/provider.dart';
 

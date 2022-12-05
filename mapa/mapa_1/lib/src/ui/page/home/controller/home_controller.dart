@@ -13,6 +13,7 @@ class HomeController extends ChangeNotifier {
   Position? get initialPosition => _initialPosition;
 
   StreamSubscription? _gpsSubscription, _positionSubscription;
+  // ignore: unused_field
   GoogleMapController? _mapController;
 
   HomeController() {
@@ -36,19 +37,14 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> _initLocationUpDates() async {
-    bool initialized = false;
-    await _positionSubscription?.cancel();
-    _positionSubscription = Geolocator.getPositionStream(
-      desiredAccuracy: LocationAccuracy.high,
+    LocationSettings locationSettings = const LocationSettings(
+      accuracy: LocationAccuracy.high,
       distanceFilter: 10,
-    ).listen(
-      (position) async {
-        if (!initialized) {
-          _setInitialPosition(position);
-          initialized = true;
-          notifyListeners();
-        }
-      },
+    );
+    await _positionSubscription?.cancel();
+    _positionSubscription =
+        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
+      (Position position) async {},
       onError: (e) {
         if (e is LocationServiceDisabledException) {
           _state = state.copyWith(gpsEnabled: false);
@@ -58,9 +54,9 @@ class HomeController extends ChangeNotifier {
     );
   }
 
+  // ignore: unused_element
   void _setInitialPosition(Position position) {
     if (state.gpsEnabled && _initialPosition == null) {
-      // _initialPosition = await Geolocator.getCurrentPosition();
       _initialPosition = position;
     }
   }
