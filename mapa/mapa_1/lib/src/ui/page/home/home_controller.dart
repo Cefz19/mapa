@@ -59,8 +59,8 @@ class HomeController extends ChangeNotifier {
 
   Future<void> _initLocationUpDates() async {
     bool initialized = false;
-    // ignore: prefer_const_constructors
-    final LocationSettings locationSettings = LocationSettings(
+
+    LocationSettings locationSettings = const LocationSettings(
       accuracy: LocationAccuracy.high,
       distanceFilter: 10,
     );
@@ -68,10 +68,6 @@ class HomeController extends ChangeNotifier {
     _positionSubscription =
         Geolocator.getPositionStream(locationSettings: locationSettings).listen(
       (Position? position) async {
-        // ignore: avoid_print
-        print(position == null
-            ? 'Unknown'
-            : '${position.latitude.toString()}, ${position.longitude.toString()}');
         _setMyPositionMarker(position!);
         if (initialized) {
           notifyListeners();
@@ -93,8 +89,6 @@ class HomeController extends ChangeNotifier {
         }
       },
       onError: (e) {
-        // ignore: avoid_print
-        print("on Error ${e.runtimeType}");
         if (e is LocationServiceDisabledException) {
           _gpsEnabled = false;
           notifyListeners();
@@ -105,7 +99,6 @@ class HomeController extends ChangeNotifier {
 
   void _setInitialPosition(Position position) {
     if (_gpsEnabled && _initialPosition == null) {
-      // _initialPosition = await Geolocator.getCurrentPosition();
       _initialPosition = position;
     }
   }
