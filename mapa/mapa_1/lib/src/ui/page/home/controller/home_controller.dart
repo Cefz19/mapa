@@ -9,9 +9,6 @@ class HomeController extends ChangeNotifier {
   HomeState _state = HomeState.initialState;
   HomeState get state => _state;
 
-  Position? _initialPosition;
-  Position? get initialPosition => _initialPosition;
-
   StreamSubscription? _gpsSubscription, _positionSubscription;
   // ignore: unused_field
   GoogleMapController? _mapController;
@@ -56,8 +53,11 @@ class HomeController extends ChangeNotifier {
 
   // ignore: unused_element
   void _setInitialPosition(Position position) {
-    if (state.gpsEnabled && _initialPosition == null) {
-      _initialPosition = position;
+    if (state.gpsEnabled && state.initialPosition == null) {
+      _state = state.copyWith(
+        initialPosition: LatLng(position.latitude, position.longitude),
+        loading: false,
+      );
     }
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapa_1/src/ui/page/home/widgets/where_are_you_going.dart';
 import 'package:provider/provider.dart';
 
 import '../controller/home_controller.dart';
@@ -16,24 +17,23 @@ class MapaView extends StatelessWidget {
           return gpsMessageWidget!;
         }
         final initialCameraPosition = CameraPosition(
-          target: LatLng(controller.initialPosition!.latitude,
-              controller.initialPosition!.longitude),
+          target: LatLng(state.initialPosition!.latitude,
+              state.initialPosition!.longitude),
         );
 
-        return Column(
-          children: <Widget>[
-            SizedBox(
-              height: MediaQuery.of(context).size.height / 2,
-              width: MediaQuery.of(context).size.width,
-              child: GoogleMap(
-                markers: state.markers.values.toSet(),
-                polylines: state.polylines.values.toSet(),
-                initialCameraPosition: initialCameraPosition,
-                myLocationButtonEnabled: true,
-                myLocationEnabled: true,
-                compassEnabled: false,
-              ),
-            )
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            GoogleMap(
+              markers: state.markers.values.toSet(),
+              polylines: state.polylines.values.toSet(),
+              initialCameraPosition: initialCameraPosition,
+              myLocationButtonEnabled: false,
+              myLocationEnabled: true,
+              compassEnabled: false,
+              zoomControlsEnabled: false,
+            ),
+            const WhereAreYouGoingButton()
           ],
         );
       },
