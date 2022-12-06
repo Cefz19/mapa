@@ -39,6 +39,8 @@ class HomeController extends ChangeNotifier {
     _init();
   }
 
+  get state => null;
+
   Future<void> _init() async {
     _carPin = BitmapDescriptor.fromBytes(
       await imageToBytes('assets/imagen_auto.png', width: 55),
