@@ -15,7 +15,7 @@ class GoogleTransito extends StatelessWidget {
       },
       child: Scaffold(
         body: Selector<HomeController, bool>(
-          selector: (_, controller) => controller.loading,
+          selector: (_, controller) => controller.state.loading,
           builder: ((context, loading, loadingWidget) {
             if (loading) {
               return loadingWidget!;
