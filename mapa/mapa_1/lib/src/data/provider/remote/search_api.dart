@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
 
 import '../../../domain/models/place.dart';
 
@@ -24,6 +24,7 @@ class SearchAPI {
           )
           .toList();
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       return null;
     }

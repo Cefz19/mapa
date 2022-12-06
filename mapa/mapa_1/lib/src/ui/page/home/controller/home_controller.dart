@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart' show ChangeNotifier;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapa_1/src/helper/current_position.dart';
 import 'package:mapa_1/src/ui/page/home/controller/home_state.dart';
 import '../maps_style.dart';
 
@@ -34,6 +35,7 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> _initLocationUpDates() async {
+    bool initialized = false;
     LocationSettings locationSettings = const LocationSettings(
       accuracy: LocationAccuracy.high,
       distanceFilter: 10,
@@ -41,7 +43,19 @@ class HomeController extends ChangeNotifier {
     await _positionSubscription?.cancel();
     _positionSubscription =
         Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-      (Position position) async {},
+      (position) async {
+        if (!initialized) {
+          _setInitialPosition(position);
+          initialized = true;
+          notifyListeners();
+        }
+        CurrentPosition.i.setValue(
+          LatLng(
+            position.latitude,
+            position.longitude,
+          ),
+        );
+      },
       onError: (e) {
         if (e is LocationServiceDisabledException) {
           _state = state.copyWith(gpsEnabled: false);

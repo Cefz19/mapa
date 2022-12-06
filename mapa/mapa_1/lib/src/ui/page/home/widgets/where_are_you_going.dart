@@ -17,7 +17,7 @@ class WhereAreYouGoingButton extends StatelessWidget {
         child: CupertinoButton(
           onPressed: () {
             final route = MaterialPageRoute(
-              builder: (_) => SearchPlacePage(),
+              builder: (_) => const SearchPlacePage(),
             );
             Navigator.push(context, route);
           },
