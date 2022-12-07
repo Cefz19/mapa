@@ -9,7 +9,20 @@ class SearchRepositoryImpl implements SearchRepository {
   SearchRepositoryImpl(this._searchAPI);
 
   @override
-  Future<List<Place>?> search(String query, LatLng at) {
-    return _searchAPI.search(query, at);
+  void search(String query, LatLng at) {
+    _searchAPI.search(query, at);
   }
+
+  @override
+  void cancel() {
+    _searchAPI.cancel();
+  }
+
+  @override
+  void dispose() {
+    _searchAPI.dispose();
+  }
+
+  @override
+  Stream<List<Place>?> get onResults => _searchAPI.onResults;
 }
