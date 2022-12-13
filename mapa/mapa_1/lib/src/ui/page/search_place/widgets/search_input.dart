@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class SearchInput extends StatelessWidget {
+class SearchInput extends StatefulWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final String placeholder;
@@ -15,17 +15,54 @@ class SearchInput extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<SearchInput> createState() => _SearchInputState();
+}
+
+class _SearchInputState extends State<SearchInput> {
+  late ValueNotifier<String> _text;
+
+  @override
+  void initState() {
+    super.initState();
+    _text = ValueNotifier(widget.controller.text);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
-        controller: controller,
-        focusNode: focusNode,
-        onChanged: onChanged,
+        controller: widget.controller,
+        focusNode: widget.focusNode,
+        onChanged: (text) {
+          _text.value = text;
+          widget.onChanged(text);
+        },
         decoration: InputDecoration(
-          labelText: placeholder,
-          border: const OutlineInputBorder(),
-        ),
+            labelText: widget.placeholder,
+            border: const OutlineInputBorder(),
+            suffixIcon: ValueListenableBuilder<String>(
+              valueListenable: _text,
+              builder: (_, text, child) {
+                if (text.isNotEmpty) {
+                  return child!;
+                }
+                return const SizedBox();
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: CupertinoButton(
+                  padding: const EdgeInsets.all(10.0),
+                  color: Colors.black38,
+                  child: const Icon(Icons.close_rounded),
+                  onPressed: () {
+                    widget.controller.text = '';
+                    _text.value = '';
+                    widget.onChanged('');
+                  },
+                ),
+              ),
+            )),
       ),
       // child: CupertinoTextField(
       //   onChanged: onChanged,
