@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_1/src/helper/current_position.dart';
 import 'package:mapa_1/src/ui/page/home/controller/home_state.dart';
+import '../../../../domain/models/place.dart';
 import '../maps_style.dart';
 
 class HomeController extends ChangeNotifier {
@@ -65,11 +66,13 @@ class HomeController extends ChangeNotifier {
     );
   }
 
-  // ignore: unused_element
   void _setInitialPosition(Position position) {
     if (state.gpsEnabled && state.initialPosition == null) {
       _state = state.copyWith(
-        initialPosition: LatLng(position.latitude, position.longitude),
+        initialPosition: LatLng(
+          position.latitude,
+          position.longitude,
+        ),
         loading: false,
       );
     }
@@ -78,6 +81,38 @@ class HomeController extends ChangeNotifier {
   void onMapCreated(GoogleMapController controller) {
     controller.setMapStyle(mapStyle);
     _mapController = controller;
+  }
+
+  void setOriginAndDestination(Place origin, Place destination) {
+    final copy = {
+      ..._state.markers
+    }; //final copy = Map<MarkerId, Marker>.from(_state.markers);
+
+    const originId = MarkerId('origin');
+    const destinationId = MarkerId('destination');
+
+    final originMarker = Marker(
+        markerId: originId,
+        position: originId.position,
+        infoWindow: InfoWindow(
+          title: origin.title,
+        ));
+
+    final destinationMarker = Marker(
+      markerId: destinationId,
+      position: destinationId.position,
+      infoWindow: InfoWindow(
+        title: destination.title,
+      ),
+    );
+    copy[originId] = originMarker;
+    copy[destinationId] = destinationMarker;
+
+    _state = _state.copyWith(
+      origin: origin,
+      destination: destination,
+    );
+    notifyListeners();
   }
 
   Future<void> turnOnGPS() => Geolocator.openLocationSettings();
