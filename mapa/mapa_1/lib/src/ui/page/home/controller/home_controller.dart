@@ -12,7 +12,7 @@ class HomeController extends ChangeNotifier {
   HomeState get state => _state;
 
   StreamSubscription? _gpsSubscription, _positionSubscription;
-  // ignore: unused_field
+
   GoogleMapController? _mapController;
 
   HomeController() {
@@ -93,14 +93,14 @@ class HomeController extends ChangeNotifier {
 
     final originMarker = Marker(
         markerId: originId,
-        position: originId.position,
+        position: origin.position,
         infoWindow: InfoWindow(
           title: origin.title,
         ));
 
     final destinationMarker = Marker(
       markerId: destinationId,
-      position: destinationId.position,
+      position: destination.position,
       infoWindow: InfoWindow(
         title: destination.title,
       ),
