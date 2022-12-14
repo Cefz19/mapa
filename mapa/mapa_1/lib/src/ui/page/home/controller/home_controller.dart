@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart' show ChangeNotifier;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapa_1/src/data/provider/local/geolocator_wrapper.dart';
 import 'package:mapa_1/src/helper/current_position.dart';
 import 'package:mapa_1/src/ui/page/home/controller/home_state.dart';
 import '../../../../domain/models/place.dart';
@@ -15,7 +16,9 @@ class HomeController extends ChangeNotifier {
 
   GoogleMapController? _mapController;
 
-  HomeController() {
+  final GeolocatorWrapper _geolocator;
+
+  HomeController(this._geolocator) {
     _init();
   }
 
@@ -23,28 +26,21 @@ class HomeController extends ChangeNotifier {
     final gpsEnabled = await Geolocator.isLocationServiceEnabled();
     _state = state.copyWith(gpsEnabled: gpsEnabled);
 
-    _gpsSubscription = Geolocator.getServiceStatusStream().listen(
-      (status) async {
-        final gpsEnabled = status == ServiceStatus.enabled;
-        if (gpsEnabled) {
-          _state = state.copyWith(gpsEnabled: gpsEnabled);
-          _initLocationUpDates();
-        }
+    _gpsSubscription = _geolocator.onServiceEnabled.listen(
+      (enabled) {
+        _state = state.copyWith(gpsEnabled: enabled);
+        notifyListeners();
       },
     );
+
     _initLocationUpDates();
   }
 
   Future<void> _initLocationUpDates() async {
     bool initialized = false;
-    LocationSettings locationSettings = const LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 10,
-    );
-    await _positionSubscription?.cancel();
-    _positionSubscription =
-        Geolocator.getPositionStream(locationSettings: locationSettings).listen(
-      (position) async {
+
+    _positionSubscription = _geolocator.onLocationUpdates.listen(
+      (position) {
         if (!initialized) {
           _setInitialPosition(position);
           initialized = true;
@@ -56,12 +52,6 @@ class HomeController extends ChangeNotifier {
             position.longitude,
           ),
         );
-      },
-      onError: (e) {
-        if (e is LocationServiceDisabledException) {
-          _state = state.copyWith(gpsEnabled: false);
-          notifyListeners();
-        }
       },
     );
   }
@@ -115,7 +105,7 @@ class HomeController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> turnOnGPS() => Geolocator.openLocationSettings();
+  Future<void> turnOnGPS() => _geolocator.openLocationSettings();
 
   @override
   void dispose() {
