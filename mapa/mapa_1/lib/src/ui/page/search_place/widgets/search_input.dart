@@ -6,12 +6,14 @@ class SearchInput extends StatefulWidget {
   final FocusNode focusNode;
   final String placeholder;
   final void Function(String) onChanged;
+  final VoidCallback onClear;
   const SearchInput({
     Key? key,
     required this.placeholder,
     required this.onChanged,
     required this.focusNode,
     required this.controller,
+    required this.onClear,
   }) : super(key: key);
 
   @override
@@ -25,6 +27,14 @@ class _SearchInputState extends State<SearchInput> {
   void initState() {
     super.initState();
     _text = ValueNotifier(widget.controller.text);
+    widget.controller.addListener(() {
+      final textFromController = widget.controller.text;
+      if (textFromController.isEmpty && _text.value.isEmpty) {
+        _text.value = '';
+      } else if (textFromController.isNotEmpty) {
+        _text.value = '';
+      }
+    });
   }
 
   @override
@@ -58,7 +68,7 @@ class _SearchInputState extends State<SearchInput> {
                   onPressed: () {
                     widget.controller.text = '';
                     _text.value = '';
-                    widget.onChanged('');
+                    widget.onClear();
                   },
                 ),
               ),

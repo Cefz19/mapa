@@ -38,11 +38,15 @@ class SearchPlaceController extends ChangeNotifier {
     originFocusNode.addListener(() {
       if (originFocusNode.hasFocus && !_originHasFocus) {
         _onOriginFocusNodeChanged(true);
+      } else if (!originFocusNode.hasFocus && _origin == null) {
+        originController.text = '';
       }
     });
     originFocusNode.addListener(() {
       if (destinationFocusNode.hasFocus && _originHasFocus) {
         _onOriginFocusNodeChanged(false);
+      } else if (!destinationFocusNode.hasFocus && _origin == null) {
+        destinationController.text = '';
       }
     });
   }
@@ -70,11 +74,20 @@ class SearchPlaceController extends ChangeNotifier {
       } else {
         // ignore: avoid_print
         print('Cancel API call');
-        _searchRepository.cancel();
-        _places = [];
-        notifyListeners();
+        clearQuery();
       }
     });
+  }
+
+  void clearQuery() {
+    _searchRepository.cancel();
+    _places = [];
+    if (_originHasFocus) {
+      _origin = null;
+    } else {
+      _destination = null;
+    }
+    notifyListeners();
   }
 
   void pickPlace(Place place) {

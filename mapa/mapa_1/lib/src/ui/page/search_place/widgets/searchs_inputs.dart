@@ -20,12 +20,14 @@ class SearchInputs extends StatelessWidget {
           focusNode: controller.originFocusNode,
           placeholder: 'origin',
           onChanged: controller.onQueryChanged,
+          onClear: controller.clearQuery,
         ),
         SearchInput(
           controller: controller.destinationController,
           focusNode: controller.destinationFocusNode,
           placeholder: 'destination',
           onChanged: controller.onQueryChanged,
+          onClear: controller.clearQuery,
         ),
       ],
     );

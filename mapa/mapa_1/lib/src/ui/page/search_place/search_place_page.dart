@@ -36,6 +36,7 @@ class SearchPlacePage extends StatelessWidget {
       ),
       child: Scaffold(
         appBar: const SearchAppBar(),
+        backgroundColor: Colors.white,
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           child: SizedBox(
