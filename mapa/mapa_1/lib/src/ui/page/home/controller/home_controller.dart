@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_1/src/data/provider/local/geolocator_wrapper.dart';
 import 'package:mapa_1/src/helper/current_position.dart';
 import 'package:mapa_1/src/ui/page/home/controller/home_state.dart';
+import 'package:mapa_1/src/ui/page/splash/utils/fit_map.dart';
 import '../../../../domain/models/place.dart';
 import '../maps_style.dart';
 
@@ -73,7 +74,7 @@ class HomeController extends ChangeNotifier {
     _mapController = controller;
   }
 
-  void setOriginAndDestination(Place origin, Place destination) {
+  void setOriginAndDestination(Place origin, Place destination) async {
     final copy = {
       ..._state.markers
     }; //final copy = Map<MarkerId, Marker>.from(_state.markers);
@@ -101,6 +102,13 @@ class HomeController extends ChangeNotifier {
     _state = _state.copyWith(
       origin: origin,
       destination: destination,
+    );
+    await _mapController?.animateCamera(
+      fitMap(
+        origin.position,
+        destination.position,
+        padding: 100,
+      ),
     );
     notifyListeners();
   }
