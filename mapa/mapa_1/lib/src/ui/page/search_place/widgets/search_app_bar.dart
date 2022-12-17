@@ -27,7 +27,7 @@ class SearchAppBar extends StatelessWidget with PreferredSizeWidget {
             final bool enabled = origin != null && destination != null;
             return CupertinoButton(
               // ignore: sort_child_properties_last
-              child: Text('SAVE'),
+              child: const Text('SAVE'),
               onPressed: enabled
                   ? () {
                       Navigator.pop(
