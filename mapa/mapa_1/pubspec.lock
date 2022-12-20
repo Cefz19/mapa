@@ -78,6 +78,15 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.4"
+  flexible_polyline:
+    dependency: "direct main"
+    description:
+      path: dart
+      ref: HEAD
+      resolved-ref: "464609ee681358fbf6bb388ae1d6644e713ba1b6"
+      url: "https://github.com/heremaps/flexible-polyline.git"
+    source: git
+    version: "1.0.1"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -448,6 +457,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.4.12"
+  tuple:
+    dependency: transitive
+    description:
+      name: tuple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
   typed_data:
     dependency: transitive
     description:

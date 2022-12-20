@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' show LatLng;
+import 'package:mapa_1/src/helper/const.dart';
 
 import '../../../domain/models/place.dart';
 
@@ -18,13 +19,13 @@ class SearchAPI {
     try {
       _cancelToken = CancelToken();
       final response = await _dio.get(
-        '/',
+        'https://router.hereapi.com/v8/routes',
         queryParameters: {
-          "apiKey": '/',
+          "apiKey": apikey,
           "q": query,
-          "at": '/',
-          "in": '/',
-          "type": '/',
+          "at": '${at.latitude},${at.longitude}',
+          "in": 'countryCode:MEX',
+          "type": 'place,street,city,locality,intersection',
         },
         cancelToken: _cancelToken,
       );

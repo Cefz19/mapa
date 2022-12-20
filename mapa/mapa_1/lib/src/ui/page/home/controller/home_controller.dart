@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:ui' as ui;
-import 'package:flutter/widgets.dart' show ChangeNotifier;
+import 'package:flutter/widgets.dart' show ChangeNotifier, Offset;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_1/src/data/provider/local/geolocator_wrapper.dart';
+import 'package:mapa_1/src/domain/repositories/routes_repository.dart';
 import 'package:mapa_1/src/helper/current_position.dart';
 import 'package:mapa_1/src/ui/page/home/controller/home_state.dart';
 import 'package:mapa_1/src/ui/page/home/widgets/custom_marker.dart';
@@ -20,8 +21,12 @@ class HomeController extends ChangeNotifier {
   GoogleMapController? _mapController;
 
   final GeolocatorWrapper _geolocator;
+  final RoutesRepository _routesRepository;
 
-  HomeController(this._geolocator) {
+  HomeController(
+    this._geolocator,
+    this._routesRepository,
+  ) {
     _init();
   }
 
@@ -77,42 +82,65 @@ class HomeController extends ChangeNotifier {
   }
 
   void setOriginAndDestination(Place origin, Place destination) async {
-    final copy = {
-      ..._state.markers
-    }; //final copy = Map<MarkerId, Marker>.from(_state.markers);
-
-    const originId = MarkerId('origin');
-    const destinationId = MarkerId('destination');
-
-    final originIcon = await _placeToMarker(origin, null);
-    final destinationIcon = await _placeToMarker(destination, 30);
-
-    final originMarker = Marker(
-      markerId: originId,
-      position: origin.position,
-      icon: originIcon,
+    final routes = await _routesRepository.get(
+      origin: origin.position,
+      destination: destination.position,
     );
+    if (routes != null && routes.isNotEmpty) {
+      final markersCopy = {
+        ..._state.markers
+      }; //final copy = Map<MarkerId, Marker>.from(_state.markers);
 
-    final destinationMarker = Marker(
-      markerId: destinationId,
-      position: destination.position,
-      icon: destinationIcon,
-    );
-    copy[originId] = originMarker;
-    copy[destinationId] = destinationMarker;
+      const originId = MarkerId('origin');
+      const destinationId = MarkerId('destination');
 
-    _state = _state.copyWith(
-      origin: origin,
-      destination: destination,
-    );
-    await _mapController?.animateCamera(
-      fitMap(
-        origin.position,
-        destination.position,
-        padding: 100,
-      ),
-    );
-    notifyListeners();
+      final route = routes.first;
+
+      final originIcon = await _placeToMarker(origin, null);
+      final destinationIcon = await _placeToMarker(
+        destination,
+        route.duration,
+      );
+
+      final originMarker = Marker(
+        markerId: originId,
+        position: origin.position,
+        icon: originIcon,
+        anchor: const Offset(0.5, 1.2),
+      );
+
+      final destinationMarker = Marker(
+        markerId: destinationId,
+        position: destination.position,
+        icon: destinationIcon,
+        anchor: const Offset(0.5, 1.2),
+      );
+      markersCopy[originId] = originMarker;
+      markersCopy[destinationId] = destinationMarker;
+      final polylinesCopy = {..._state.polylines};
+      const polylineId = PolylineId('route');
+      final polyline = Polyline(
+        polylineId: polylineId,
+        visible: true,
+        points: route.points,
+        width: 2,
+      );
+      polylinesCopy[polylineId] = polyline;
+      _state = _state.copyWith(
+        origin: origin,
+        destination: destination,
+        markers: markersCopy,
+        polylines: polylinesCopy,
+      );
+      await _mapController?.animateCamera(
+        fitMap(
+          origin.position,
+          destination.position,
+          padding: 100,
+        ),
+      );
+      notifyListeners();
+    }
   }
 
   Future<void> turnOnGPS() => _geolocator.openLocationSettings();

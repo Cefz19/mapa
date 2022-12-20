@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mapa_1/src/data/provider/local/geolocator_wrapper.dart';
+import 'package:mapa_1/src/data/provider/remote/route_api.dart';
+import 'package:mapa_1/src/data/repositiries_impl/routes_repository_imp.dart';
 
 import 'package:mapa_1/src/ui/page/home/home_controller.dart';
 import 'package:mapa_1/src/ui/page/home/widgets/map_view.dart';
@@ -12,6 +15,9 @@ class GoogleTransito extends StatelessWidget {
     return ChangeNotifierProvider<HomeController>(
       create: (_) => HomeController(
         GeolocatorWrapper(),
+        RoutesRepositoryImpl(
+          RouteAPI(Dio()),
+        ),
       ),
       child: Scaffold(
         body: Selector<HomeController, bool>(

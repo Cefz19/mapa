@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' show ChangeNotifier, Colors, Offset;
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_1/src/data/provider/local/geolocator_wrapper.dart';
+import 'package:mapa_1/src/data/repositiries_impl/routes_repository_imp.dart';
 import 'package:mapa_1/src/helper/image_to_bite.dart';
 import 'maps_style.dart';
 
@@ -36,7 +37,8 @@ class HomeController extends ChangeNotifier {
   String _polylineId = '0';
   String _polygonId = '0';
 
-  HomeController(GeolocatorWrapper geolocatorWrapper) {
+  HomeController(GeolocatorWrapper geolocatorWrapper,
+      RoutesRepositoryImpl routesRepositoryImpl) {
     _init();
   }
 

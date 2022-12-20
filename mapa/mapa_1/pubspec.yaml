@@ -42,6 +42,10 @@ dependencies:
   permission_handler: ^10.2.0
   geolocator: ^9.0.2
   dio: ^4.0.6
+  flexible_polyline:
+    git:
+      url:  https://github.com/heremaps/flexible-polyline.git
+      path: dart
 
 dev_dependencies:
   flutter_test:

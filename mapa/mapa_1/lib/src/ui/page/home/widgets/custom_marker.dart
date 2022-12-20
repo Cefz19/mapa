@@ -90,10 +90,15 @@ class MyCustomMarker extends CustomPainter {
         width: size.height,
       );
     } else {
+      final realDuration = Duration(seconds: duartion!);
+      final minutes = realDuration.inMinutes;
+
+      final String durationAsText =
+          "${minutes > 59 ? realDuration.inHours : minutes}";
       _drawText(
         canvas: canvas,
         size: size,
-        text: '$duartion',
+        text: durationAsText,
         fontSize: 25,
         dy: -8,
         color: Colors.white,
@@ -103,7 +108,7 @@ class MyCustomMarker extends CustomPainter {
       _drawText(
         canvas: canvas,
         size: size,
-        text: 'MIN',
+        text: minutes > 59 ? "H" : 'MIN',
         fontSize: 19,
         dy: 13,
         color: Colors.white,
