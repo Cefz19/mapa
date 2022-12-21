@@ -7,6 +7,7 @@ import 'package:mapa_1/src/data/provider/local/geolocator_wrapper.dart';
 import 'package:mapa_1/src/domain/repositories/routes_repository.dart';
 import 'package:mapa_1/src/helper/current_position.dart';
 import 'package:mapa_1/src/ui/page/home/controller/home_state.dart';
+import 'package:mapa_1/src/ui/page/home/widgets/circle_marker.dart';
 import 'package:mapa_1/src/ui/page/home/widgets/custom_marker.dart';
 import 'package:mapa_1/src/ui/page/splash/utils/fit_map.dart';
 import '../../../../domain/models/place.dart';
@@ -22,6 +23,8 @@ class HomeController extends ChangeNotifier {
 
   final GeolocatorWrapper _geolocator;
   final RoutesRepository _routesRepository;
+
+  BitmapDescriptor? _dotMarker;
 
   HomeController(
     this._geolocator,
@@ -40,8 +43,8 @@ class HomeController extends ChangeNotifier {
         notifyListeners();
       },
     );
-
     _initLocationUpDates();
+    _dotMarker = await getDotMarker();
   }
 
   Future<void> _initLocationUpDates() async {
@@ -93,6 +96,8 @@ class HomeController extends ChangeNotifier {
 
       const originId = MarkerId('origin');
       const destinationId = MarkerId('destination');
+      const originDot = MarkerId('originDot');
+      const destinationDot = MarkerId('destinationDot');
 
       final route = routes.first;
 
@@ -117,6 +122,20 @@ class HomeController extends ChangeNotifier {
       );
       markersCopy[originId] = originMarker;
       markersCopy[destinationId] = destinationMarker;
+
+      markersCopy[originDot] = Marker(
+        markerId: originDot,
+        position: route.points.first,
+        icon: _dotMarker!,
+        anchor: const Offset(0.5, 0.5),
+      );
+      markersCopy[destinationDot] = Marker(
+        markerId: destinationDot,
+        position: route.points.last,
+        icon: _dotMarker!,
+        anchor: const Offset(0.5, 0.5),
+      );
+
       final polylinesCopy = {..._state.polylines};
       const polylineId = PolylineId('route');
       final polyline = Polyline(
@@ -125,7 +144,7 @@ class HomeController extends ChangeNotifier {
         points: route.points,
         width: 2,
       );
-      polylinesCopy[polylineId] != polyline;
+      polylinesCopy[polylineId] == polyline;
 
       _state = _state.copyWith(
         origin: origin,

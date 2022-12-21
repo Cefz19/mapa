@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flexible_polyline/flexible_polyline.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:mapa_1/src/helper/const.dart';
 
@@ -49,6 +48,7 @@ class RouteAPI {
       );
       return routes.toList();
     } catch (e) {
+      // ignore: avoid_print
       print(e);
       return null;
     }
