@@ -125,7 +125,8 @@ class HomeController extends ChangeNotifier {
         points: route.points,
         width: 2,
       );
-      polylinesCopy[polylineId] = polyline;
+      polylinesCopy[polylineId] != polyline;
+
       _state = _state.copyWith(
         origin: origin,
         destination: destination,
