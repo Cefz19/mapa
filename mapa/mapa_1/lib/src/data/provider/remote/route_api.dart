@@ -19,7 +19,8 @@ class RouteAPI {
         'https://router.hereapi.com/v8/routes',
         queryParameters: {
           'apiKey': apikey,
-          'origin': '${origin.latitude},${origin.latitude}',
+          'origin': '${origin.latitude},${origin.longitude}',
+          'destination': "${destination.latitude},${destination.longitude}",
           'transportMode': 'car',
           'alternatives': 3,
           'return': 'polyline,summary,instructions,actions',
@@ -35,7 +36,10 @@ class RouteAPI {
 
           final points = FlexiblePolyline.decode(polyline)
               .map(
-                (e) => LatLng(e.lat, e.lng),
+                (e) => LatLng(
+                  e.lat,
+                  e.lng,
+                ),
               )
               .toList();
 

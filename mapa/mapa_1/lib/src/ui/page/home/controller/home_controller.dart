@@ -34,7 +34,7 @@ class HomeController extends ChangeNotifier {
   }
 
   Future<void> _init() async {
-    final gpsEnabled = await Geolocator.isLocationServiceEnabled();
+    final gpsEnabled = await _geolocator.isLocationServiceEnabled;
     _state = state.copyWith(gpsEnabled: gpsEnabled);
 
     _gpsSubscription = _geolocator.onServiceEnabled.listen(
